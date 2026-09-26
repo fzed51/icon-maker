@@ -1,0 +1,24 @@
+# Compilation Rust
+/target
+**/*.rs.bk
+*.pdb
+
+# Essais manuels à la racine (ex. `cargo run --example convert -- test.png test.ico`).
+# N'affecte pas assets/app.ico, qui doit rester suivi.
+/*.ico
+/*.png
+/*.jpg
+/*.jpeg
+
+# Réglages locaux de Claude Code (les réglages partagés restent suivis)
+.claude/settings.local.json
+
+# Éditeurs
+.idea/
+.vscode/
+*.swp
+
+# Systèmes
+Thumbs.db
+desktop.ini
+.DS_Store
