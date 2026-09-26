@@ -15,7 +15,12 @@ pub fn show(ui: &mut Ui, textures: &[TextureHandle]) {
                 let side = (size as f32).min(MAX_SHOWN);
                 let (rect, _) = ui.allocate_exact_size(Vec2::splat(side), Sense::hover());
                 checkerboard(ui.painter(), rect, 4.0);
-                ui.painter().image(tex.id(), rect, Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
+                ui.painter().image(
+                    tex.id(),
+                    rect,
+                    Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)),
+                    Color32::WHITE,
+                );
                 ui.label(RichText::new(format!("{size}")).small().weak());
             });
         }

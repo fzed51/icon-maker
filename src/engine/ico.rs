@@ -8,7 +8,14 @@ use image::{ExtendedColorType, RgbaImage};
 pub fn encode_ico(images: &[RgbaImage]) -> Result<Vec<u8>> {
     let frames = images
         .iter()
-        .map(|img| IcoFrame::as_png(img.as_raw(), img.width(), img.height(), ExtendedColorType::Rgba8))
+        .map(|img| {
+            IcoFrame::as_png(
+                img.as_raw(),
+                img.width(),
+                img.height(),
+                ExtendedColorType::Rgba8,
+            )
+        })
         .collect::<Result<Vec<_>, _>>()?;
     let mut out = Vec::new();
     IcoEncoder::new(&mut out).encode_images(&frames)?;

@@ -25,12 +25,7 @@ pub fn resize_square(img: &RgbaImage, size: u32) -> RgbaImage {
             return Rgba([0, 0, 0, 0]);
         }
         let to_u8 = |v: f32| (v * 255.0).round().clamp(0.0, 255.0) as u8;
-        Rgba([
-            to_u8(p[0] / a),
-            to_u8(p[1] / a),
-            to_u8(p[2] / a),
-            to_u8(a),
-        ])
+        Rgba([to_u8(p[0] / a), to_u8(p[1] / a), to_u8(p[2] / a), to_u8(a)])
     })
 }
 
@@ -57,7 +52,11 @@ mod tests {
     fn no_dark_halo_on_transparent_edges() {
         // Moitié gauche : noir totalement transparent ; moitié droite : rouge opaque.
         let img = RgbaImage::from_fn(64, 64, |x, _| {
-            if x < 32 { Rgba([0, 0, 0, 0]) } else { Rgba([255, 0, 0, 255]) }
+            if x < 32 {
+                Rgba([0, 0, 0, 0])
+            } else {
+                Rgba([255, 0, 0, 255])
+            }
         });
         let out = resize_square(&img, 16);
         for p in out.pixels().filter(|p| p[3] > 8) {
@@ -69,7 +68,11 @@ mod tests {
     #[test]
     fn fully_transparent_area_stays_transparent() {
         let img = RgbaImage::from_fn(64, 64, |x, _| {
-            if x < 32 { Rgba([0, 0, 0, 0]) } else { Rgba([255, 0, 0, 255]) }
+            if x < 32 {
+                Rgba([0, 0, 0, 0])
+            } else {
+                Rgba([255, 0, 0, 255])
+            }
         });
         let out = resize_square(&img, 16);
         assert_eq!(out.get_pixel(0, 0)[3], 0);

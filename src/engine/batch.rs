@@ -6,10 +6,19 @@ use super::{Settings, SquareMode, pipeline};
 #[derive(Debug, Clone, PartialEq)]
 pub enum BatchEvent {
     /// `done` fichiers traités sur `total` (réussis ou non).
-    Progress { done: usize, total: usize },
+    Progress {
+        done: usize,
+        total: usize,
+    },
     /// Un fichier n'a pas pu être transformé ; `message` est lisible par l'utilisateur.
-    Failed { file: PathBuf, message: String },
-    Finished { ok: usize, failed: usize },
+    Failed {
+        file: PathBuf,
+        message: String,
+    },
+    Finished {
+        ok: usize,
+        failed: usize,
+    },
 }
 
 /// Réglages adaptés au lot : couleur du fond auto par image, recadrage centré.
@@ -47,7 +56,11 @@ pub fn run_batch(files: &[PathBuf], out_dir: &Path, settings: &Settings, tx: &Se
 }
 
 /// Lance [`run_batch`] dans un thread séparé.
-pub fn spawn_batch(files: Vec<PathBuf>, out_dir: PathBuf, settings: Settings) -> Receiver<BatchEvent> {
+pub fn spawn_batch(
+    files: Vec<PathBuf>,
+    out_dir: PathBuf,
+    settings: Settings,
+) -> Receiver<BatchEvent> {
     let (tx, rx) = channel();
     std::thread::spawn(move || run_batch(&files, &out_dir, &settings, &tx));
     rx
@@ -95,7 +108,10 @@ mod tests {
         assert!(out.join("b.ico").exists());
         assert!(!out.join("casse.ico").exists());
 
-        let progress = events.iter().filter(|e| matches!(e, BatchEvent::Progress { .. })).count();
+        let progress = events
+            .iter()
+            .filter(|e| matches!(e, BatchEvent::Progress { .. }))
+            .count();
         assert_eq!(progress, 3);
         let failed: Vec<_> = events
             .iter()
@@ -107,14 +123,19 @@ mod tests {
         assert_eq!(failed.len(), 1);
         assert_eq!(failed[0].0, bad);
         assert!(!failed[0].1.is_empty());
-        assert_eq!(events.last(), Some(&BatchEvent::Finished { ok: 2, failed: 1 }));
+        assert_eq!(
+            events.last(),
+            Some(&BatchEvent::Finished { ok: 2, failed: 1 })
+        );
     }
 
     #[test]
     fn spawn_batch_finishes_in_background() {
         let dir = tempfile::tempdir().unwrap();
         let a = dir.path().join("a.png");
-        RgbaImage::from_pixel(10, 10, Rgba([0, 0, 0, 255])).save(&a).unwrap();
+        RgbaImage::from_pixel(10, 10, Rgba([0, 0, 0, 255]))
+            .save(&a)
+            .unwrap();
         let rx = spawn_batch(vec![a], dir.path().to_path_buf(), Settings::default());
         let last = rx.iter().last();
         assert_eq!(last, Some(BatchEvent::Finished { ok: 1, failed: 0 }));

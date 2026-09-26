@@ -71,7 +71,10 @@ impl IconMakerApp {
             }
         }
         if let Some(mut path) = dialog.save_file() {
-            if path.extension().is_none_or(|e| !e.eq_ignore_ascii_case("ico")) {
+            if path
+                .extension()
+                .is_none_or(|e| !e.eq_ignore_ascii_case("ico"))
+            {
                 path.set_extension("ico");
             }
             self.state.error = self.state.save(&path).err().map(|e| e.to_string());
@@ -79,7 +82,13 @@ impl IconMakerApp {
     }
 
     fn handle_dropped_files(&mut self, ctx: &egui::Context) {
-        let dropped: Vec<PathBuf> = ctx.input(|i| i.raw.dropped_files.iter().map(|f| f.path().to_path_buf()).collect());
+        let dropped: Vec<PathBuf> = ctx.input(|i| {
+            i.raw
+                .dropped_files
+                .iter()
+                .map(|f| f.path().to_path_buf())
+                .collect()
+        });
         match dropped.len() {
             0 => {}
             1 => self.open(&dropped[0]),
@@ -89,7 +98,9 @@ impl IconMakerApp {
 
     /// Recalcule l'aperçu quand les réglages ont changé, après un court délai.
     fn refresh_preview(&mut self, ctx: &egui::Context) {
-        let Some(src) = &self.state.preview_source else { return };
+        let Some(src) = &self.state.preview_source else {
+            return;
+        };
         let settings = self.state.settings;
         if self.rendered == Some(settings) {
             return;
@@ -104,7 +115,12 @@ impl IconMakerApp {
             }
         }
         let prepared = pipeline::prepare(src, &settings);
-        self.preview_tex = Some(ui::to_texture(ctx, "preview", &prepared, TextureOptions::LINEAR));
+        self.preview_tex = Some(ui::to_texture(
+            ctx,
+            "preview",
+            &prepared,
+            TextureOptions::LINEAR,
+        ));
         self.sizes_tex = resize::resize_all(&prepared)
             .iter()
             .enumerate()
@@ -119,7 +135,10 @@ impl IconMakerApp {
         ui::steps::show(ui, self.state.step());
         if let Some(err) = self.state.error.clone() {
             ui.horizontal(|ui| {
-                ui.colored_label(egui::Color32::from_rgb(200, 60, 40), RichText::new(format!("✖ {err}")).strong());
+                ui.colored_label(
+                    egui::Color32::from_rgb(200, 60, 40),
+                    RichText::new(format!("✖ {err}")).strong(),
+                );
                 if ui.small_button("OK").clicked() {
                     self.state.error = None;
                 }
@@ -127,8 +146,14 @@ impl IconMakerApp {
         }
         if let (Step::Saved, Some(path)) = (self.state.step(), self.state.last_saved.clone()) {
             ui.horizontal(|ui| {
-                ui.label(RichText::new("✔ Icône enregistrée !").strong().color(egui::Color32::from_rgb(20, 140, 60)));
-                ui.label(RichText::new(path.file_name().unwrap_or_default().to_string_lossy()).weak());
+                ui.label(
+                    RichText::new("✔ Icône enregistrée !")
+                        .strong()
+                        .color(egui::Color32::from_rgb(20, 140, 60)),
+                );
+                ui.label(
+                    RichText::new(path.file_name().unwrap_or_default().to_string_lossy()).weak(),
+                );
                 if ui.button("Ouvrir le dossier").clicked() {
                     let _ = std::process::Command::new("explorer")
                         .arg(format!("/select,{}", path.display()))
@@ -144,10 +169,18 @@ impl IconMakerApp {
         ui.horizontal(|ui| {
             sizes_strip::show(ui, &self.sizes_tex);
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                let btn = egui::Button::new(RichText::new("💾  Enregistrer mon icône").size(20.0).color(egui::Color32::WHITE))
-                    .fill(ACCENT)
-                    .min_size(BIG_BUTTON + egui::vec2(60.0, 10.0));
-                if ui.add(btn).on_hover_text("Choisis où ranger ton icône").clicked() {
+                let btn = egui::Button::new(
+                    RichText::new("💾  Enregistrer mon icône")
+                        .size(20.0)
+                        .color(egui::Color32::WHITE),
+                )
+                .fill(ACCENT)
+                .min_size(BIG_BUTTON + egui::vec2(60.0, 10.0));
+                if ui
+                    .add(btn)
+                    .on_hover_text("Choisis où ranger ton icône")
+                    .clicked()
+                {
                     self.save_dialog();
                 }
             });
@@ -171,7 +204,9 @@ impl eframe::App for IconMakerApp {
                 .exact_size(290.0)
                 .show(ui, |ui| {
                     egui::ScrollArea::vertical()
-                        .show(ui, |ui| settings::show(ui, &mut self.state, &mut self.show_more))
+                        .show(ui, |ui| {
+                            settings::show(ui, &mut self.state, &mut self.show_more)
+                        })
                         .inner
                 })
                 .inner;
@@ -182,7 +217,14 @@ impl eframe::App for IconMakerApp {
             }
         }
         let action = egui::CentralPanel::default()
-            .show(ui, |ui| preview::show(ui, &mut self.state, self.preview_tex.as_ref(), files_hovered))
+            .show(ui, |ui| {
+                preview::show(
+                    ui,
+                    &mut self.state,
+                    self.preview_tex.as_ref(),
+                    files_hovered,
+                )
+            })
             .inner;
         if let preview::PreviewAction::OpenDialog = action {
             self.open_dialog();

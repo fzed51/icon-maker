@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf;
+use std::path::PathBuf;
 use std::sync::mpsc::Receiver;
 
 use egui::{Context, RichText};
@@ -64,15 +64,14 @@ impl BatchWindow {
         ui.label("Toutes les images seront transformées avec les réglages actuels.");
         ui.add_enabled_ui(!self.running(), |ui| {
             ui.horizontal(|ui| {
-                if ui.button("Ajouter des images…").clicked() {
-                    if let Some(files) = rfd::FileDialog::new()
+                if ui.button("Ajouter des images…").clicked()
+                    && let Some(files) = rfd::FileDialog::new()
                         .add_filter("Images", &["jpg", "jpeg", "png"])
                         .pick_files()
-                    {
-                        self.files.extend(files);
-                        self.files.dedup();
-                        self.finished = None;
-                    }
+                {
+                    self.files.extend(files);
+                    self.files.dedup();
+                    self.finished = None;
                 }
                 if !self.files.is_empty() && ui.button("Vider la liste").clicked() {
                     self.files.clear();
@@ -80,11 +79,16 @@ impl BatchWindow {
                 }
             });
             ui.label(format!("{} image(s) choisie(s)", self.files.len()));
-            egui::ScrollArea::vertical().max_height(120.0).show(ui, |ui| {
-                for f in &self.files {
-                    ui.label(RichText::new(f.file_name().unwrap_or_default().to_string_lossy()).small());
-                }
-            });
+            egui::ScrollArea::vertical()
+                .max_height(120.0)
+                .show(ui, |ui| {
+                    for f in &self.files {
+                        ui.label(
+                            RichText::new(f.file_name().unwrap_or_default().to_string_lossy())
+                                .small(),
+                        );
+                    }
+                });
             ui.horizontal(|ui| {
                 ui.label("Enregistrer dans :");
                 let name = self
@@ -93,27 +97,36 @@ impl BatchWindow {
                     .map(|d| d.display().to_string())
                     .unwrap_or_else(|| "(pas encore choisi)".into());
                 ui.label(RichText::new(name).italics());
-                if ui.button("Choisir…").clicked() {
-                    if let Some(dir) = rfd::FileDialog::new().pick_folder() {
-                        self.out_dir = Some(dir);
-                    }
+                if ui.button("Choisir…").clicked()
+                    && let Some(dir) = rfd::FileDialog::new().pick_folder()
+                {
+                    self.out_dir = Some(dir);
                 }
             });
         });
 
         let ready = !self.files.is_empty() && self.out_dir.is_some() && !self.running();
-        let start = egui::Button::new(RichText::new("Lancer").size(18.0).color(egui::Color32::WHITE)).fill(ACCENT);
-        if ui.add_enabled(ready, start).clicked() {
-            if let Some(out) = &self.out_dir {
-                self.errors.clear();
-                self.finished = None;
-                (self.done, self.total) = (0, self.files.len());
-                self.rx = Some(spawn_batch(self.files.clone(), out.clone(), *settings));
-            }
+        let start = egui::Button::new(
+            RichText::new("Lancer")
+                .size(18.0)
+                .color(egui::Color32::WHITE),
+        )
+        .fill(ACCENT);
+        if ui.add_enabled(ready, start).clicked()
+            && let Some(out) = &self.out_dir
+        {
+            self.errors.clear();
+            self.finished = None;
+            (self.done, self.total) = (0, self.files.len());
+            self.rx = Some(spawn_batch(self.files.clone(), out.clone(), *settings));
         }
 
         if self.running() || self.finished.is_some() {
-            let frac = if self.total == 0 { 0.0 } else { self.done as f32 / self.total as f32 };
+            let frac = if self.total == 0 {
+                0.0
+            } else {
+                self.done as f32 / self.total as f32
+            };
             ui.add(egui::ProgressBar::new(frac).text(format!("{} / {}", self.done, self.total)));
         }
         if let Some((ok, failed)) = self.finished {
@@ -123,16 +136,19 @@ impl BatchWindow {
                 format!("C'est fini : {ok} icône(s) créée(s), {failed} image(s) n'ont pas marché.")
             };
             ui.label(RichText::new(msg).strong());
-            if let Some(out) = &self.out_dir {
-                if ui.button("Ouvrir le dossier").clicked() {
-                    let _ = std::process::Command::new("explorer").arg(out).spawn();
-                }
+            if let Some(out) = &self.out_dir
+                && ui.button("Ouvrir le dossier").clicked()
+            {
+                let _ = std::process::Command::new("explorer").arg(out).spawn();
             }
         }
         for (file, message) in &self.errors {
             ui.colored_label(
                 egui::Color32::from_rgb(200, 60, 40),
-                format!("✖ {} : {message}", file.file_name().unwrap_or_default().to_string_lossy()),
+                format!(
+                    "✖ {} : {message}",
+                    file.file_name().unwrap_or_default().to_string_lossy()
+                ),
             );
         }
     }

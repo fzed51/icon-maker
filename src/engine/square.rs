@@ -7,7 +7,12 @@ pub fn pad_to_square(img: &RgbaImage) -> RgbaImage {
     let (w, h) = img.dimensions();
     let side = w.max(h);
     let mut out = RgbaImage::new(side, side);
-    imageops::replace(&mut out, img, ((side - w) / 2) as i64, ((side - h) / 2) as i64);
+    imageops::replace(
+        &mut out,
+        img,
+        ((side - w) / 2) as i64,
+        ((side - h) / 2) as i64,
+    );
     out
 }
 

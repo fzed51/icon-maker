@@ -18,9 +18,7 @@ pub fn corner_color(img: &RgbaImage) -> Rgb<u8> {
 
 /// Écart entre deux couleurs, de 0 (identiques) à 100 (noir ↔ blanc).
 fn distance(p: &Rgba<u8>, key: Rgb<u8>) -> f32 {
-    let sq: f32 = (0..3)
-        .map(|c| (p[c] as f32 - key[c] as f32).powi(2))
-        .sum();
+    let sq: f32 = (0..3).map(|c| (p[c] as f32 - key[c] as f32).powi(2)).sum();
     sq.sqrt() / (255.0 * 3f32.sqrt()) * 100.0
 }
 
@@ -115,7 +113,11 @@ mod tests {
     fn white_inside_subject_is_not_erased() {
         let mut img = ring_on_white();
         remove_background(&mut img, Rgb([255, 255, 255]), 10.0, 10.0);
-        assert_eq!(img.get_pixel(10, 10), &WHITE, "l'intérieur du sujet est troué");
+        assert_eq!(
+            img.get_pixel(10, 10),
+            &WHITE,
+            "l'intérieur du sujet est troué"
+        );
         assert_eq!(img.get_pixel(5, 5), &BLACK);
     }
 

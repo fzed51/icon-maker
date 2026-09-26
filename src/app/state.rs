@@ -95,7 +95,11 @@ impl AppState {
 
 /// Convertit une position écran en coordonnées normalisées dans le rectangle de l'aperçu.
 /// Renvoie `None` hors du rectangle.
-pub fn screen_to_uv(rect_min: (f32, f32), rect_size: (f32, f32), pos: (f32, f32)) -> Option<(f32, f32)> {
+pub fn screen_to_uv(
+    rect_min: (f32, f32),
+    rect_size: (f32, f32),
+    pos: (f32, f32),
+) -> Option<(f32, f32)> {
     let u = (pos.0 - rect_min.0) / rect_size.0;
     let v = (pos.1 - rect_min.1) / rect_size.1;
     ((0.0..=1.0).contains(&u) && (0.0..=1.0).contains(&v)).then_some((u, v))
@@ -121,7 +125,11 @@ mod tests {
     /// 100×50 : moitié gauche verte, moitié droite jaune. Enregistrée dans un dossier temporaire.
     fn saved_image(dir: &Path) -> PathBuf {
         let img = RgbaImage::from_fn(100, 50, |x, _| {
-            if x < 50 { Rgba([0, 200, 0, 255]) } else { Rgba([250, 250, 0, 255]) }
+            if x < 50 {
+                Rgba([0, 200, 0, 255])
+            } else {
+                Rgba([250, 250, 0, 255])
+            }
         });
         let path = dir.join("photo.png");
         img.save(&path).unwrap();
@@ -217,9 +225,18 @@ mod tests {
 
     #[test]
     fn screen_to_uv_converts_and_rejects_outside() {
-        assert_eq!(screen_to_uv((100.0, 50.0), (200.0, 200.0), (200.0, 100.0)), Some((0.5, 0.25)));
-        assert_eq!(screen_to_uv((100.0, 50.0), (200.0, 200.0), (99.0, 100.0)), None);
-        assert_eq!(screen_to_uv((100.0, 50.0), (200.0, 200.0), (200.0, 251.0)), None);
+        assert_eq!(
+            screen_to_uv((100.0, 50.0), (200.0, 200.0), (200.0, 100.0)),
+            Some((0.5, 0.25))
+        );
+        assert_eq!(
+            screen_to_uv((100.0, 50.0), (200.0, 200.0), (99.0, 100.0)),
+            None
+        );
+        assert_eq!(
+            screen_to_uv((100.0, 50.0), (200.0, 200.0), (200.0, 251.0)),
+            None
+        );
     }
 
     #[test]

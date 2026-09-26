@@ -34,7 +34,11 @@ fn jpeg_on_white_gives_icon_with_transparent_corner() {
 
     let icon = image::open(&output).unwrap().to_rgba8();
     assert_eq!(icon.dimensions(), (256, 256));
-    assert_eq!(icon.get_pixel(0, 0)[3], 0, "le coin devrait être transparent");
+    assert_eq!(
+        icon.get_pixel(0, 0)[3],
+        0,
+        "le coin devrait être transparent"
+    );
     let center = icon.get_pixel(128, 128);
     assert_eq!(center[3], 255);
     assert!(center[0] > 180, "le sujet rouge doit être conservé");

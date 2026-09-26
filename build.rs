@@ -6,6 +6,7 @@ fn main() {
         res.set_icon("assets/app.ico");
         res.set("FileDescription", "Icon Maker — crée ton icône");
         res.set("ProductName", "Icon Maker");
-        res.compile().expect("impossible d'intégrer l'icône de l'application");
+        res.compile()
+            .expect("impossible d'intégrer l'icône de l'application");
     }
 }

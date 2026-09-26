@@ -67,10 +67,16 @@ mod tests {
     #[test]
     fn prepare_with_crop_uses_offset() {
         let img = RgbaImage::from_fn(40, 20, |x, _| {
-            if x < 20 { Rgba([255, 0, 0, 255]) } else { Rgba([0, 0, 255, 255]) }
+            if x < 20 {
+                Rgba([255, 0, 0, 255])
+            } else {
+                Rgba([0, 0, 255, 255])
+            }
         });
-        let mut s = Settings::default();
-        s.square = SquareMode::Crop { offset: 1.0 };
+        let s = Settings {
+            square: SquareMode::Crop { offset: 1.0 },
+            ..Default::default()
+        };
         let out = prepare(&img, &s);
         assert_eq!(out.dimensions(), (20, 20));
         assert_eq!(out.get_pixel(0, 0), &Rgba([0, 0, 255, 255]));

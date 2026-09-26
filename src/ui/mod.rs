@@ -15,9 +15,18 @@ pub const ACCENT: Color32 = Color32::from_rgb(0, 120, 212);
 /// Taille des gros boutons.
 pub const BIG_BUTTON: Vec2 = Vec2::new(220.0, 44.0);
 
-pub fn to_texture(ctx: &Context, name: &str, img: &RgbaImage, options: TextureOptions) -> TextureHandle {
+pub fn to_texture(
+    ctx: &Context,
+    name: &str,
+    img: &RgbaImage,
+    options: TextureOptions,
+) -> TextureHandle {
     let size = [img.width() as usize, img.height() as usize];
-    ctx.load_texture(name, ColorImage::from_rgba_unmultiplied(size, img.as_raw()), options)
+    ctx.load_texture(
+        name,
+        ColorImage::from_rgba_unmultiplied(size, img.as_raw()),
+        options,
+    )
 }
 
 /// Damier gris clair : représente la transparence.
