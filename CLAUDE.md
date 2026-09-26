@@ -15,7 +15,8 @@ cargo run -- image.png         # ouvre directement une image (comme « Ouvrir av
 cargo test                     # tests unitaires (dans chaque module) + tests/end_to_end.rs
 cargo test prepare_with_crop   # un seul test, par nom (filtre sur sous-chaîne)
 cargo test --test end_to_end   # uniquement les tests d'intégration
-cargo clippy --all-targets
+cargo clippy --all-targets -- -D warnings   # comme la CI : aucun avertissement toléré
+cargo fmt --check              # vérifié par la CI (cargo fmt pour corriger)
 cargo run --example convert -- entree.png sortie.ico   # conversion sans UI (sert à régénérer assets/app.ico)
 ```
 
