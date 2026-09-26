@@ -6,7 +6,7 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le pr
 
 ## [Non publié]
 
-## [0.1.0] - 2026-09-26
+## [1.0.0] - 2026-09-26
 
 ### Ajouté
 
@@ -21,5 +21,5 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le pr
 - Orientation EXIF des photos prise en compte.
 - Exécutable autonome avec son icône intégrée.
 
-[Non publié]: https://github.com/fzed51/icon-maker/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/fzed51/icon-maker/commits/main
+[Non publié]: https://github.com/fzed51/icon-maker/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/fzed51/icon-maker/releases/tag/v1.0.0
